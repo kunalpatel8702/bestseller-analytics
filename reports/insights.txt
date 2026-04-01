@@ -1,0 +1,27 @@
+============================================================
+TOP 10 INSIGHTS: AMAZON BESTSELLING BOOKS
+============================================================
+
+1. Price distribution has a mean of $22.41 and median of $18.70. Skewness of 12.92 indicates right-skewed distribution.
+
+2. 582 books (58.4%) have ratings >= 4.2, indicating strong overall quality among bestsellers.
+
+3. 'fantasy' is the most popular genre with 86 books (8.6% of dataset).
+
+4. Price and reviews count have a correlation of -0.014, suggesting negative relationship.
+
+5. Price and rating have a correlation of -0.011. Rating has minimal impact on price.
+
+6. 'reviews_count' has the strongest correlation with price (-0.014).
+
+7. 'science' has the highest average price ($34.49), while 'history' has the lowest ($17.62).
+
+8. 'Stephen King' has the most bestsellers with 66 books in the dataset.
+
+9. Books published since 2020 have an average price of $23.33.
+
+10. Dataset contains 996 books across 14 genres from 20 authors.
+
+============================================================
+END OF INSIGHTS
+============================================================

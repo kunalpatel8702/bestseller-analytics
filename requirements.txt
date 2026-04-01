@@ -1,0 +1,26 @@
+# Core Data Science Libraries
+# Machine Learning
+# Advanced ML (Integrated)
+# Dashboard & API
+
+catboost>=1.2.0
+fastapi>=0.95.0
+ipykernel>=6.19.0
+joblib>=1.2.0
+jupyter>=1.0.0
+matplotlib>=3.6.0
+numpy>=1.23.0
+pandas>=1.5.0
+plotly>=5.17.0
+python-multipart>=0.0.6
+scikit-learn>=1.2.0
+scipy>=1.9.0
+seaborn>=0.12.0
+shap>=0.40.0
+streamlit>=1.28.0
+uvicorn>=0.22.0
+xgboost>=1.7.0
+# Price Comparison API Requirements
+requests>=2.25.0
+python-dotenv>=1.0.0
+fpdf>=1.7.2

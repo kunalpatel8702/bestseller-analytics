@@ -1,0 +1,22 @@
+artifact_path: file:C:/Users/ASUS/Downloads/book price/Amzone_book_pr - main/mlruns/1/models/m-2b3566d558e343769d47f0d0b5b29c34/artifacts
+flavors:
+  catboost:
+    catboost_version: 1.2.10
+    code: null
+    data: model.cb
+    model_type: CatBoostClassifier
+    save_format: cbm
+  python_function:
+    data: model.cb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.catboost
+    python_version: 3.14.0
+mlflow_version: 3.10.1
+model_id: m-2b3566d558e343769d47f0d0b5b29c34
+model_size_bytes: 1153904
+model_uuid: m-2b3566d558e343769d47f0d0b5b29c34
+prompts: null
+run_id: cb33ef971e8b4a86ab4670d080e71c85
+utc_time_created: '2026-03-27 13:31:23.458792'

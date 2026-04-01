@@ -1,0 +1,6 @@
+Accuracy Metric Report
+======================
+MAE: 11.5104
+MSE: 2452.1169
+RMSE: 49.5189
+R2 Score: -0.0637
