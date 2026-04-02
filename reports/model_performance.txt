@@ -2,9 +2,9 @@
 MODEL TRAINING REPORT
 ============================================================
 
-Dataset: 440 samples
-Features: 15
-Train/Test Split: 352/88
+Dataset: 996 samples
+Features: 16
+Train/Test Split: 796/200
 
 ============================================================
 MODEL COMPARISON
@@ -12,15 +12,15 @@ MODEL COMPARISON
 
 Ridge Regression:
   Test MAE:  $0.00
-  Test RMSE: $0.01
+  Test RMSE: $0.00
   Test R²:   1.0000
   CV R²:     1.0000 ± 0.0000
 
 Random Forest:
-  Test MAE:  $0.34
-  Test RMSE: $0.59
-  Test R²:   0.9850
-  CV R²:     0.9814 ± 0.0047
+  Test MAE:  $0.77
+  Test RMSE: $2.92
+  Test R²:   0.9930
+  CV R²:     0.9761 ± 0.0101
 
 ============================================================
 BEST MODEL
@@ -29,5 +29,5 @@ BEST MODEL
 Selected Model: Ridge Regression
 Test R²: 1.0000
 Test MAE: $0.00
-Test RMSE: $0.01
+Test RMSE: $0.00
 
