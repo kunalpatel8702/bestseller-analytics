@@ -35,7 +35,7 @@ def predict_price(book: BookInput):
     
     try:
         # Convert Pydantic to dict
-        book_dict = book.dict()
+        book_dict = book.model_dump()
         
         # Get raw market price
         market_price = predictor.predict_market_price(book_dict)

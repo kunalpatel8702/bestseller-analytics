@@ -13,6 +13,7 @@ DB_PATH = "data/book_price_history.db"
 
 def init_db():
     """Initialize the SQLite database for price history."""
+    os.makedirs("data", exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('''

@@ -106,7 +106,7 @@ class DataCleaner:
         if missing_price > 0:
             # Fill with median price (robust to outliers)
             median_price = self.df['price'].median()
-            self.df['price'].fillna(median_price, inplace=True)
+            self.df['price'] = self.df['price'].fillna(median_price)
             self.cleaning_report.append(
                 f"[WARNING] Filled {missing_price} missing prices with median: ${median_price:.2f}"
             )
@@ -167,7 +167,7 @@ class DataCleaner:
         missing_ratings = self.df['rating'].isna().sum()
         if missing_ratings > 0:
             median_rating = self.df['rating'].median()
-            self.df['rating'].fillna(median_rating, inplace=True)
+            self.df['rating'] = self.df['rating'].fillna(median_rating)
             self.cleaning_report.append(
                 f"[WARNING] Filled {missing_ratings} missing ratings with median: {median_rating:.1f}"
             )
@@ -273,7 +273,7 @@ class DataCleaner:
         missing_years = self.df['year'].isna().sum()
         if missing_years > 0:
             median_year = self.df['year'].median()
-            self.df['year'].fillna(median_year, inplace=True)
+            self.df['year'] = self.df['year'].fillna(median_year)
             self.cleaning_report.append(f"[WARNING] Filled {missing_years} missing years with median")
         
         self.df['year'] = self.df['year'].astype(int)

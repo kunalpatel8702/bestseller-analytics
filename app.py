@@ -32,13 +32,6 @@ from src.predict import PricePredictor
 from src.predict_advanced import AdvancedPredictor
 from src.price_comparison_service import compare_book_prices
 from models.predict_model import BookPriceEnsemblePredictor
-try:
-    from fpdf import FPDF
-    FPDF_AVAILABLE = True
-except ImportError:
-    FPDF_AVAILABLE = False
-    FPDF = None
-
 # Page configuration
 st.set_page_config(
     page_title="Book Price Predictor",
@@ -479,19 +472,13 @@ elif page == "⚖️ Price Comparison":
                     pdf_text += f"- {row['source']}: Rs.{row['price']:.2f} | Rating: {row.get('rating', 'N/A')}\n"
                 
                 try:
-    from fpdf import FPDF
-    FPDF_AVAILABLE = True
-except ImportError:
-    FPDF_AVAILABLE = False
-    FPDF = None
-                try:
                     pdf = FPDF()
                     pdf.add_page()
                     pdf.set_font("Arial", size=12)
                     for line in pdf_text.split('\n'):
                         pdf.cell(200, 10, txt=line, ln=1, align='L')
                     pdf_output = pdf.output(dest='S').encode('latin-1')
-                except ImportError:
+                except Exception:
                     pdf_output = pdf_text.encode('utf-8')
                 
                 c1, c2, c3 = st.columns(3)
@@ -748,7 +735,7 @@ elif page == "📈 Model Performance":
         predictions_df = pd.read_csv("reports/predictions.csv")
         st.markdown("## ⚠️ Top 10 Predictions (Legacy Data)")
         st.dataframe(predictions_df.head(10), use_container_width=True)
-    except:
+    except Exception:
         pass
 
 # ============================================================================
@@ -961,7 +948,7 @@ elif page == "📉 Model Diagnostics":
         st.markdown("### 🌎 Global Feature Importance (Ensemble Voting Weights)")
         try:
             st.image("reports/visualizations/feature_importance_mega.png", caption="Feature Importance (Aggregated from RF/XGB Estimators)")
-        except:
+        except Exception:
             st.write("*(Feature importance plot will appear here once the 'models/train_model.py' is run)*")
 
 

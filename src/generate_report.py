@@ -1,10 +1,17 @@
-import pandas as pd
-from ydata_profiling import ProfileReport
+try:
+    from ydata_profiling import ProfileReport
+except ImportError:
+    ProfileReport = None
 import sys
 
 def generate_report(data_path="data/cleaned.csv", output_path="reports/profile_report.html"):
+    if ProfileReport is None:
+        print("[ERROR] 'ydata-profiling' not found. Please install with: pip install ydata-profiling")
+        return
+
     print(f"[INFO] Generating Profiling Report (ydata-profiling)...")
     try:
+        import pandas as pd
         df = pd.read_csv(data_path)
         profile = ProfileReport(df, title="Book Bestsellers Profiling Report", explorative=True)
         profile.to_file(output_path)
