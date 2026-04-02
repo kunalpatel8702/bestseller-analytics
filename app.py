@@ -20,7 +20,11 @@ import joblib
 from pathlib import Path
 import plotly.express as px
 import plotly.graph_objects as go
-import shap
+try:
+    import shap
+    SHAP_AVAILABLE = True
+except ImportError:
+    SHAP_AVAILABLE = False
 import json
 import io
 import time
@@ -28,7 +32,12 @@ from src.predict import PricePredictor
 from src.predict_advanced import AdvancedPredictor
 from src.price_comparison_service import compare_book_prices
 from models.predict_model import BookPriceEnsemblePredictor
-from fpdf import FPDF
+try:
+    from fpdf import FPDF
+    FPDF_AVAILABLE = True
+except ImportError:
+    FPDF_AVAILABLE = False
+    FPDF = None
 
 # Page configuration
 st.set_page_config(
@@ -469,7 +478,12 @@ elif page == "⚖️ Price Comparison":
                 for index, row in df_prices.iterrows():
                     pdf_text += f"- {row['source']}: Rs.{row['price']:.2f} | Rating: {row.get('rating', 'N/A')}\n"
                 
-                from fpdf import FPDF
+                try:
+    from fpdf import FPDF
+    FPDF_AVAILABLE = True
+except ImportError:
+    FPDF_AVAILABLE = False
+    FPDF = None
                 try:
                     pdf = FPDF()
                     pdf.add_page()
@@ -932,7 +946,10 @@ elif page == "📉 Model Diagnostics":
                 
                 # Matplotlib for SHAP
                 fig, ax = plt.subplots(figsize=(10, 6))
-                shap.plots.waterfall(shap_values[0], show=False)
+                if SHAP_AVAILABLE:
+                    shap.plots.waterfall(shap_values[0], show=False)
+                else:
+                    st.warning("SHAP library not available.")
                 st.pyplot(fig)
                 plt.clf() # Clear for next plot
             except Exception as e:

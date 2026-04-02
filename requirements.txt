@@ -19,9 +19,11 @@ seaborn>=0.12.0
 shap>=0.40.0
 streamlit>=1.28.0
 uvicorn>=0.22.0
-xgboost>=1.7.0
+xgboost>=1.7.0
+
 # Price Comparison API Requirements
 requests>=2.25.0
 python-dotenv>=1.0.0
 fpdf>=1.7.2
 xlsxwriter>=3.0.0
+openpyxl>=3.0.0

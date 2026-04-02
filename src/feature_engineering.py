@@ -349,7 +349,7 @@ def main():
     """Main execution function."""
     # Define paths
     input_path = "data/cleaned.csv"
-    output_path = "data/cleaned.csv"  # Overwrite cleaned data with engineered features
+    output_path = "data/engineered.csv"  # Save separately to preserve original cleaned.csv
     
     # Initialize and run feature engineer
     engineer = FeatureEngineer(input_path, output_path)

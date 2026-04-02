@@ -109,7 +109,8 @@ class ModelEvaluator:
     def make_predictions(self):
         """Generate predictions using trained model."""
         try:
-            self.y_pred = self.model.predict(self.X)
+            raw = self.model.predict(self.X)
+            self.y_pred = pd.Series(raw, index=self.X.index)
             print(f"[INFO] Generated predictions for {len(self.y_pred)} samples")
             return True
         except Exception as e:

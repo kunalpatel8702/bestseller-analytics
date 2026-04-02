@@ -118,10 +118,13 @@ def train_mega_ensemble():
         'max_depth': [10, 20, None],
         'min_samples_split': [2, 5]
     }
-    rf_gs = GridSearchCV(rf, rf_params, cv=5, n_jobs=-1, scoring='r2')
-    # Train preprocessor separately to feed GS
+    # Use a mini-pipeline for GridSearch to avoid double-fitting the preprocessor
+    rf_pipe = Pipeline([('pre', preprocessor), ('rf', rf)])
+    rf_gs = GridSearchCV(rf_pipe, {'rf__' + k: v for k, v in rf_params.items()}, cv=5, n_jobs=-1, scoring='r2')
+    rf_gs.fit(X_train, y_train)
+    best_rf = rf_gs.best_estimator_.named_steps['rf']
+    # Fit preprocessor once for XGB grid search reuse
     X_train_proc = preprocessor.fit_transform(X_train)
-    rf_gs.fit(X_train_proc, y_train)
     best_rf = rf_gs.best_estimator_
     
     # Component 2: XGBoost
@@ -186,6 +189,7 @@ def train_mega_ensemble():
     plt.ylabel('Predicted Price')
     plt.title('Actual vs Predicted Prices')
     plt.savefig('reports/visualizations/actual_vs_predicted_mega.png')
+    plt.close()
     
     # 2. Residual Plot
     plt.figure(figsize=(10, 6))
@@ -196,12 +200,14 @@ def train_mega_ensemble():
     plt.ylabel('Residuals')
     plt.title('Residual Plot')
     plt.savefig('reports/visualizations/residual_plot_mega.png')
+    plt.close()
     
     # 3. Error Distribution
     plt.figure(figsize=(10, 6))
     sns.histplot(residuals, kde=True, color='#f093fb')
     plt.title('Error (Residual) Distribution')
     plt.savefig('reports/visualizations/error_distribution_mega.png')
+    plt.close()
     
     # 4. Feature Importance (Using RF Component as Proxy)
     # Get feature names after one-hot encoding
@@ -218,6 +224,7 @@ def train_mega_ensemble():
     plt.yticks(range(len(indices)), [feature_names[i] for i in indices])
     plt.xlabel('Relative Importance')
     plt.savefig('reports/visualizations/feature_importance_mega.png')
+    plt.close()
     
     # Persistence
     joblib.dump(full_pipeline, 'models/price_model.pkl')
