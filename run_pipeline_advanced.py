@@ -8,7 +8,7 @@ This script runs the complete end-to-end pipeline:
 4. Model Training
 5. Model Evaluation
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import sys

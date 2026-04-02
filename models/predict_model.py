@@ -73,11 +73,11 @@ class BookPriceEnsemblePredictor:
                 df_input = input_data.copy()
             
             # Feature check and default synthesis
-            required_cols = ['year', 'reviews_count', 'rating', 'genre', 'publisher', 'author', 'store']
+            required_cols = ['year', 'reviews_count', 'rating', 'genre', 'publisher', 'author', 'store', 'sales_rank']
             for col in required_cols:
                 if col not in df_input.columns:
                     # Provide neutral defaults to prevent crash
-                    if col in ['rating', 'reviews_count', 'year']:
+                    if col in ['rating', 'reviews_count', 'year', 'sales_rank']:
                         df_input[col] = 0
                     else:
                         df_input[col] = 'Unknown'

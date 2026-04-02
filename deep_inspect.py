@@ -4,7 +4,7 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 
-prs = Presentation(r"C:\Doc Ref\MS24147_Final_Presentation.pptx")
+prs = Presentation("MSCAIML06.pptx")
 
 print(f"Total slides: {len(prs.slides)}")
 print(f"Slide Width: {prs.slide_width.inches:.3f} in, Height: {prs.slide_height.inches:.3f} in")

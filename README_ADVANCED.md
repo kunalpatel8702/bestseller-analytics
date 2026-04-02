@@ -220,7 +220,7 @@ Check `reports/model_performance.txt` for detailed metrics.
 
 ## 👥 Author
 
-Senior Data Science Team
+Kunal Patel
 
 **Project Type**: Production-Ready Analytics Pipeline
 

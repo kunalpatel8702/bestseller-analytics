@@ -7,7 +7,7 @@ This interactive dashboard provides:
 - Model performance metrics
 - Pricing recommendations
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import os
@@ -158,7 +158,8 @@ page = st.sidebar.radio(
         "📊 Data Explorer", 
         "📈 Model Performance", 
         "📉 Model Diagnostics",
-        "💡 Insights"
+        "💡 Insights",
+        "🔍 Bulk Scanner"
     ]
 )
 
@@ -946,11 +947,182 @@ elif page == "📉 Model Diagnostics":
         except:
             st.write("*(Feature importance plot will appear here once the 'models/train_model.py' is run)*")
 
+
+# ============================================================================
+# BULK SCANNER PAGE
+# ============================================================================
+elif page == "🔍 Bulk Scanner":
+    st.markdown('<div class="main-header">🔍 Bulk Book Price Scanner</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Upload a file with multiple books and get instant batch price predictions</div>', unsafe_allow_html=True)
+
+    # --- Sample Data ---
+    sample_books = pd.DataFrame([
+        {
+            'genre': 'fiction', 'author': 'James Clear', 'publisher': 'Penguin',
+            'rating': 4.7, 'reviews_count': 15000, 'year': 2020,
+            'store': 'Amazon', 'delivery_type': 'Prime', 'demand': 85
+        },
+        {
+            'genre': 'nonfiction', 'author': 'Malcolm Gladwell', 'publisher': 'Little, Brown',
+            'rating': 4.5, 'reviews_count': 8000, 'year': 2019,
+            'store': 'Flipkart', 'delivery_type': 'Standard', 'demand': 70
+        },
+        {
+            'genre': 'mystery', 'author': 'Agatha Christie', 'publisher': 'HarperCollins',
+            'rating': 4.8, 'reviews_count': 22000, 'year': 2018,
+            'store': 'Amazon', 'delivery_type': 'Express', 'demand': 90
+        },
+    ])
+
+    # --- Step 1: Download Sample Templates ---
+    st.markdown("## 1. Download Sample Templates")
+    sc1, sc2, sc3 = st.columns(3)
+
+    csv_sample = sample_books.to_csv(index=False).encode('utf-8')
+    sc1.download_button(
+        "📄 Download CSV Sample", csv_sample,
+        "books_sample.csv", "text/csv", use_container_width=True
+    )
+
+    xlsx_buffer = io.BytesIO()
+    with pd.ExcelWriter(xlsx_buffer, engine='xlsxwriter') as writer:
+        sample_books.to_excel(writer, index=False)
+    sc2.download_button(
+        "📊 Download Excel Sample", xlsx_buffer.getvalue(),
+        "books_sample.xlsx", "application/vnd.ms-excel", use_container_width=True
+    )
+
+    json_sample = sample_books.to_json(orient='records', indent=2)
+    sc3.download_button(
+        "📦 Download JSON Sample", json_sample,
+        "books_sample.json", "application/json", use_container_width=True
+    )
+
+    st.divider()
+
+    # --- Step 2: Upload File ---
+    st.markdown("## 2. Upload File to Scan")
+    uploaded_bulk = st.file_uploader(
+        "Choose a file",
+        type=["csv", "xlsx", "json"],
+        help="200MB per file • CSV, XLSX, JSON",
+        key="bulk_scanner_upload"
+    )
+
+    if uploaded_bulk is not None:
+        try:
+            if uploaded_bulk.name.endswith('.csv'):
+                bulk_df = pd.read_csv(uploaded_bulk)
+            elif uploaded_bulk.name.endswith('.xlsx'):
+                bulk_df = pd.read_excel(uploaded_bulk)
+            elif uploaded_bulk.name.endswith('.json'):
+                bulk_df = pd.read_json(uploaded_bulk)
+            else:
+                st.error("Unsupported file type.")
+                bulk_df = None
+        except Exception as e:
+            st.error(f"Could not read file: {e}")
+            bulk_df = None
+
+        if bulk_df is not None:
+            st.markdown("### 📄 File Preview (Top 5 Rows)")
+            st.dataframe(bulk_df.head(5), use_container_width=True)
+            st.info(f"**{len(bulk_df):,} records** detected in the uploaded file.")
+
+            st.divider()
+
+            if st.button("🚀 Start Bulk Scan", use_container_width=True):
+                if ensemble_predictor is None or ensemble_predictor.model is None:
+                    st.error("⚠️ Ensemble model is not loaded. Please run the training pipeline first.")
+                else:
+                    results_list = []
+                    errors = []
+                    progress_bar = st.progress(0, text="Scanning books...")
+
+                    for idx, row in bulk_df.iterrows():
+                        try:
+                            book_dict = row.to_dict()
+                            result = ensemble_predictor.predict_mega(book_dict)
+                            if result.get("success"):
+                                results_list.append({
+                                    **book_dict,
+                                    "Predicted Price ($)": result["predicted_price"],
+                                    "Confidence Score": f"{result['confidence_score']}%"
+                                })
+                            else:
+                                results_list.append({
+                                    **book_dict,
+                                    "Predicted Price ($)": "Error",
+                                    "Confidence Score": result.get("error", "Unknown error")
+                                })
+                                errors.append(idx)
+                        except Exception as e:
+                            results_list.append({
+                                **row.to_dict(),
+                                "Predicted Price ($)": "Error",
+                                "Confidence Score": str(e)
+                            })
+                            errors.append(idx)
+
+                        progress_bar.progress(
+                            (idx + 1) / len(bulk_df),
+                            text=f"Scanning {idx + 1} / {len(bulk_df)} records..."
+                        )
+
+                    progress_bar.empty()
+                    results_df = pd.DataFrame(results_list)
+
+                    successful = results_df[results_df["Predicted Price ($)"] != "Error"]
+                    st.success(f"✅ Bulk Scan Complete! **{len(successful):,}** predictions made, **{len(errors)}** errors.")
+
+                    if len(successful) > 0:
+                        successful_prices = pd.to_numeric(successful["Predicted Price ($)"], errors='coerce')
+                        m1, m2, m3, m4 = st.columns(4)
+                        m1.metric("📦 Total Records", f"{len(bulk_df):,}")
+                        m2.metric("✅ Successful", f"{len(successful):,}")
+                        m3.metric("💰 Avg Predicted Price", f"${successful_prices.mean():.2f}")
+                        m4.metric("🏆 Max Predicted Price", f"${successful_prices.max():.2f}")
+
+                        st.markdown("### 📊 Predicted Price Distribution")
+                        fig_bulk = px.histogram(
+                            x=successful_prices.dropna(),
+                            nbins=20,
+                            title="Distribution of Predicted Book Prices",
+                            color_discrete_sequence=['#667eea'],
+                            labels={"x": "Price (USD)", "y": "Number of Books"}
+                        )
+                        fig_bulk.add_vline(
+                            x=successful_prices.mean(), line_dash="dash", line_color="red",
+                            annotation_text=f"Mean: ${successful_prices.mean():.2f}"
+                        )
+                        st.plotly_chart(fig_bulk, use_container_width=True)
+
+                    st.markdown("### 📋 Full Results Table")
+                    st.dataframe(results_df, use_container_width=True)
+
+                    st.markdown("### 3. Download Results")
+                    d1, d2 = st.columns(2)
+
+                    csv_out = results_df.to_csv(index=False).encode('utf-8')
+                    d1.download_button(
+                        "📥 Download Results as CSV", csv_out,
+                        "bulk_scan_results.csv", "text/csv", use_container_width=True
+                    )
+
+                    json_out = results_df.to_json(orient='records', indent=2).encode('utf-8')
+                    d2.download_button(
+                        "📜 Download Results as JSON", json_out,
+                        "bulk_scan_results.json", "application/json", use_container_width=True
+                    )
+    else:
+        st.info("👆 Upload a CSV, Excel, or JSON file above to get started. Use the sample templates to see the required column format.")
+
+
 # Footer
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 2rem;">
-    <p>© 2026 Amazon Bestselling Books Analytics Project | Powered by Mega-Ensemble ML Pipeline</p>
+    <p>© 2026 Amazon Bestselling Books Analytics | Developed by <strong>Kunal Patel</strong> | Sardar Patel University</p>
     <p style="font-size: 0.8rem;">Advanced Analytics: VotingRegressor (XGBoost + Random Forest + Linear Regression) | GridSearchCV Cross-Validation</p>
 </div>
 """, unsafe_allow_html=True)

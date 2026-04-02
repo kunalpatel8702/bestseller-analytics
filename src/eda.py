@@ -7,7 +7,7 @@ This script generates:
 - Top 10 insights automatically
 - All plots saved to reports/visualizations/
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import pandas as pd

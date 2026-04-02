@@ -221,11 +221,12 @@ Check `reports/model_performance.txt` for detailed metrics.
 
 ## 👥 Author
 
-Senior Data Science Team
+**Kunal Patel**  
+Sardar Patel University
 
 **Project Type**: Production-Ready Analytics Pipeline
 
-**Last Updated**: February 2026
+**Last Updated**: April 2026
 
 ---
 

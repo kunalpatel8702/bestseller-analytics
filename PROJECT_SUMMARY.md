@@ -2,7 +2,7 @@
 
 ## Amazon Bestselling Books: EDA and Price Prediction
 
-**Delivered by:** Senior Data Science Team  
+**Delivered by:** Kunal Patel  
 **Date:** February 2026  
 **Status:** ✅ COMPLETE & PRODUCTION-READY
 

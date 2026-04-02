@@ -8,7 +8,7 @@ This script creates a highly realistic dataset with:
 - Anomalies and outliers (for detection)
 - Duplicates (for cleaning)
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import pandas as pd

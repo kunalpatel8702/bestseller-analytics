@@ -7,7 +7,7 @@ This module provides:
 - Genre-based pricing analysis
 - Confidence intervals for predictions
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import pandas as pd

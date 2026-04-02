@@ -8,7 +8,7 @@ This module:
 - Saves trained model for production use
 - Generates feature importance analysis
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import pandas as pd

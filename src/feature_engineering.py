@@ -9,7 +9,7 @@ This module creates derived features for price prediction:
 
 Prevents data leakage by fitting encoders only on training data.
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import pandas as pd

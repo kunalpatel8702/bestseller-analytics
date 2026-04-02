@@ -8,7 +8,7 @@ This module:
 - Creates prediction vs actual plots
 - Analyzes prediction errors
 
-Author: Senior Data Science Team
+Author: Kunal Patel
 """
 
 import pandas as pd
