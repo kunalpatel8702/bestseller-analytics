@@ -494,185 +494,120 @@ elif page == "⚖️ Price Comparison":
 # ============================================================================
 elif page == "📊 Data Explorer":
     st.markdown('<div class="main-header">📊 Data Explorer</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Interactive data visualization and analysis</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Advanced multi-dimensional data analysis</div>', unsafe_allow_html=True)
     
     if df is None:
         st.error("⚠️ Data not loaded.")
     else:
         # Tabs for different views
-        tab1, tab2, tab3, tab4 = st.tabs(["📈 Overview", "📚 Genre Analysis", "✍️ Author Analysis", "🔍 Custom Filter"])
+        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Overview", "Genres", "Authors", "Trends", "Correlations", "Filter"])
         
         with tab1:
-            st.markdown("## 📈 Dataset Overview")
-            
-            # Summary statistics
+            st.markdown("## 📈 Market Pulse Overview")
             col1, col2, col3, col4, col5 = st.columns(5)
+            with col1: st.metric("📚 Library", f"{len(df):,}")
+            with col2: st.metric("💰 Avg Price", f"${df['price'].mean():.2f}")
+            with col3: st.metric("⭐ Quality", f"{df['rating'].mean():.2f}")
+            with col4: st.metric("💬 Engagement", f"{df['reviews_count'].sum():,}")
+            with col5: st.metric("🏷️ Genres", df['genre'].nunique())
             
-            with col1:
-                st.metric("Total Books", f"{len(df):,}")
-            with col2:
-                st.metric("Avg Price", f"${df['price'].mean():.2f}")
-            with col3:
-                st.metric("Avg Rating", f"{df['rating'].mean():.2f}")
-            with col4:
-                st.metric("Total Reviews", f"{df['reviews_count'].sum():,}")
-            with col5:
-                st.metric("Genres", df['genre'].nunique())
-            
-            # Price distribution
-            st.markdown("### 💰 Price Distribution")
-            fig = px.histogram(df, x='price', nbins=30, 
-                             title='Price Distribution',
-                             labels={'price': 'Price ($)', 'count': 'Frequency'},
-                             color_discrete_sequence=['#667eea'])
-            fig.add_vline(x=df['price'].mean(), line_dash="dash", line_color="red",
-                         annotation_text=f"Mean: ${df['price'].mean():.2f}")
+            st.markdown("### 💎 Price Intelligence (Global Distribution)")
+            fig = px.histogram(df, x='price', nbins=50, template="plotly_dark", 
+                             color_discrete_sequence=['#00f2fe'], # Cyan Neon
+                             marginal="rug") # Add data density strip
+            fig.add_vline(x=df['price'].mean(), line_dash="dash", line_color="#ff4b2b", 
+                         annotation_text=f" Avg: ${df['price'].mean():.1f}", 
+                         annotation_position="top right")
+            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', 
+                            bargap=0.1, hovermode='x unified')
             st.plotly_chart(fig, use_container_width=True)
             
-            # Rating distribution
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("### ⭐ Rating Distribution")
-                fig = px.histogram(df, x='rating', nbins=20,
-                                 title='Rating Distribution',
-                                 labels={'rating': 'Rating', 'count': 'Frequency'},
-                                 color_discrete_sequence=['#f5576c'])
+            c1, c2 = st.columns(2)
+            with c1:
+                st.markdown("### 🌟 Rating Spectrum")
+                fig = px.histogram(df, x='rating', nbins=25, template="plotly_dark", 
+                                 color_discrete_sequence=['#ff0844'], # Radical Red
+                                 marginal="box")
+                fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', bargap=0.2)
                 st.plotly_chart(fig, use_container_width=True)
-            
-            with col2:
-                st.markdown("### 💬 Reviews Distribution")
-                fig = px.histogram(df, x='reviews_count', nbins=30,
-                                 title='Reviews Count Distribution (Log Scale)',
-                                 labels={'reviews_count': 'Reviews Count', 'count': 'Frequency'},
-                                 color_discrete_sequence=['#4facfe'],
-                                 log_x=True)
+            with c2:
+                st.markdown("### 📣 Reviews Velocity (Log)")
+                fig = px.histogram(df, x='reviews_count', nbins=40, template="plotly_dark", 
+                                 color_discrete_sequence=['#a18cd1']) # Purple Mist
+                fig.update_layout(xaxis_type="log", yaxis_type="linear", 
+                                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', 
+                                bargap=0.05)
                 st.plotly_chart(fig, use_container_width=True)
         
         with tab2:
-            st.markdown("## 📚 Genre Analysis")
-            
-            # Genre frequency
-            genre_counts = df['genre'].value_counts().head(10)
-            
-            col1, col2 = st.columns(2)
-            
+            st.markdown("## 📊 Genre Dominance & Share")
+            genre_counts = df['genre'].value_counts().head(12)
+            col1, col2 = st.columns([2, 1])
             with col1:
-                st.markdown("### 📊 Top 10 Genres by Frequency")
-                fig = px.bar(x=genre_counts.values, y=genre_counts.index,
-                           orientation='h',
-                           labels={'x': 'Number of Books', 'y': 'Genre'},
-                           color=genre_counts.values,
-                           color_continuous_scale='Viridis')
-                fig.update_layout(showlegend=False, height=400)
+                fig = px.bar(x=genre_counts.values, y=genre_counts.index, orientation='h', 
+                           template="plotly_dark", color=genre_counts.values, 
+                           color_continuous_scale='Magma', # High-end gradient
+                           labels={'x':'Volume', 'y':'Genre Category'})
+                fig.update_layout(showlegend=False, height=500, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
                 st.plotly_chart(fig, use_container_width=True)
-            
             with col2:
-                st.markdown("### 🥧 Genre Distribution")
-                fig = px.pie(values=genre_counts.values, names=genre_counts.index,
-                           title='Genre Distribution (Top 10)')
+                fig = px.pie(values=genre_counts.values, names=genre_counts.index, 
+                           hole=0.5, template="plotly_dark",
+                           color_discrete_sequence=px.colors.sequential.Magma_r)
+                fig.update_layout(margin=dict(t=0, b=0, l=0, r=0), paper_bgcolor='rgba(0,0,0,0)')
                 st.plotly_chart(fig, use_container_width=True)
-            
-            # Genre price analysis
-            st.markdown("### 💰 Average Price by Genre")
-            genre_price = df.groupby('genre')['price'].agg(['mean', 'std', 'count']).sort_values('mean', ascending=False).head(10)
-            
-            fig = go.Figure()
-            fig.add_trace(go.Bar(
-                x=genre_price.index,
-                y=genre_price['mean'],
-                error_y=dict(type='data', array=genre_price['std']),
-                marker_color='steelblue',
-                text=[f"${x:.2f}" for x in genre_price['mean']],
-                textposition='auto'
-            ))
-            fig.update_layout(
-                title='Average Price by Genre (Top 10)',
-                xaxis_title='Genre',
-                yaxis_title='Average Price ($)',
-                height=400
-            )
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Genre rating analysis
-            st.markdown("### ⭐ Average Rating by Genre")
-            genre_rating = df.groupby('genre')['rating'].mean().sort_values(ascending=False).head(10)
-            
-            fig = px.bar(x=genre_rating.index, y=genre_rating.values,
-                       labels={'x': 'Genre', 'y': 'Average Rating'},
-                       color=genre_rating.values,
-                       color_continuous_scale='RdYlGn')
-            fig.update_layout(showlegend=False, height=400)
-            st.plotly_chart(fig, use_container_width=True)
-        
+
         with tab3:
-            st.markdown("## ✍️ Author Analysis")
-            
-            # Top authors
-            author_counts = df['author'].value_counts().head(10)
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("### 🏆 Top 10 Authors by Bestseller Count")
-                fig = px.bar(x=author_counts.values, y=author_counts.index,
-                           orientation='h',
-                           labels={'x': 'Number of Bestsellers', 'y': 'Author'},
-                           color=author_counts.values,
-                           color_continuous_scale='Oranges')
-                fig.update_layout(showlegend=False, height=400)
-                st.plotly_chart(fig, use_container_width=True)
-            
-            with col2:
-                st.markdown("### 💰 Average Price by Top Authors")
-                top_authors = author_counts.index[:10]
-                author_price = df[df['author'].isin(top_authors)].groupby('author')['price'].mean().sort_values(ascending=False)
-                
-                fig = px.bar(x=author_price.index, y=author_price.values,
-                           labels={'x': 'Author', 'y': 'Average Price ($)'},
-                           color=author_price.values,
-                           color_continuous_scale='Purples')
-                fig.update_layout(showlegend=False, height=400, xaxis_tickangle=-45)
-                st.plotly_chart(fig, use_container_width=True)
-        
+            st.markdown("## 🏆 Top Tier Authors")
+            author_counts = df['author'].value_counts().head(15)
+            fig = px.bar(x=author_counts.index, y=author_counts.values, template="plotly_dark", 
+                       labels={'x':'Author', 'y':'Bestseller Count'}, 
+                       color=author_counts.values, color_continuous_scale='Turbo') # Vibrant color mix
+            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', xaxis_tickangle=-45)
+            st.plotly_chart(fig, use_container_width=True)
+
         with tab4:
-            st.markdown("## 🔍 Custom Data Filter")
-            
+            st.markdown("## 📅 Market Evolution (Trends)")
+            if 'year' in df.columns:
+                yearly = df.groupby('year').agg({'price':'mean', 'rating':'mean'}).reset_index()
+                yearly = yearly[yearly['year'] > 2005]
+                fig = px.line(yearly, x='year', y=['price', 'rating'], markers=True, template="plotly_dark",
+                            title='Price & Rating Over Time', color_discrete_map={'price':'#00f2fe', 'rating':'#ff0844'})
+                fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+                st.plotly_chart(fig, use_container_width=True)
+            else: st.info("Timeline data missing.")
+
+        with tab5:
+            st.markdown("## 📉 Performance Correlations")
+            fig = px.scatter(df, x='price', y='sales_rank', color='rating', template="plotly_dark", 
+                           trendline="lowess", hover_data=['title'], log_x=True, title="Price vs. Sales Rank")
+            fig.update_layout(yaxis_autorange="reversed", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+            st.plotly_chart(fig, use_container_width=True)
+
+        with tab6:
+            st.markdown("## 🔍 Smart Data Filter")
             col1, col2, col3 = st.columns(3)
+            with col1: sel_gen = st.multiselect("Genres", df['genre'].unique(), default=df['genre'].unique()[:3])
+            with col2: min_r = st.slider("Min Rating", 1.0, 5.0, 4.0)
+            with col3: max_p = st.slider("Max Price ($)", 0.0, float(df['price'].max()), float(df['price'].max()))
             
-            with col1:
-                selected_genres = st.multiselect("Select Genres", df['genre'].unique().tolist(), default=df['genre'].unique().tolist()[:3])
+            f_df = df[(df['genre'].isin(sel_gen)) & (df['rating'] >= min_r) & (df['price'] <= max_p)]
             
-            with col2:
-                price_range = st.slider("Price Range ($)", float(df['price'].min()), float(df['price'].max()), 
-                                       (float(df['price'].min()), float(df['price'].max())))
+            st.markdown(f"### Results Found: {len(f_df)}")
             
-            with col3:
-                rating_range = st.slider("Rating Range", float(df['rating'].min()), float(df['rating'].max()),
-                                        (float(df['rating'].min()), float(df['rating'].max())))
-            
-            # Filter data
-            filtered_df = df[
-                (df['genre'].isin(selected_genres)) &
-                (df['price'] >= price_range[0]) &
-                (df['price'] <= price_range[1]) &
-                (df['rating'] >= rating_range[0]) &
-                (df['rating'] <= rating_range[1])
-            ]
-            
-            st.markdown(f"### 📊 Filtered Results: {len(filtered_df)} books")
-            
-            # Scatter plot
-            fig = px.scatter(filtered_df, x='reviews_count', y='price', color='genre',
-                           size='rating', hover_data=['title', 'author'],
-                           title='Price vs Reviews (Filtered Data)',
-                           labels={'reviews_count': 'Reviews Count', 'price': 'Price ($)'},
+            # Restored Scatter Plot for Filtered Data
+            fig = px.scatter(f_df, x='reviews_count', y='price', color='genre',
+                           size='rating', hover_name='title', hover_data=['author'],
+                           template="plotly_dark",
+                           color_discrete_sequence=px.colors.qualitative.Pastel,
+                           labels={'reviews_count': 'Popularity (Reviews)', 'price': 'Investment ($)'},
                            log_x=True)
+            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                            title='Price vs. Popularity for Selected Filters')
             st.plotly_chart(fig, use_container_width=True)
             
-            # Show filtered data
-            if st.checkbox("Show filtered data table"):
-                st.dataframe(filtered_df[['title', 'author', 'genre', 'price', 'rating', 'reviews_count']].head(50))
+            if st.checkbox("Show Filtered Data Table"):
+                st.dataframe(f_df.head(100), use_container_width=True)
 
 # ============================================================================
 # MODEL PERFORMANCE PAGE
@@ -708,35 +643,60 @@ elif page == "📈 Model Performance":
     st.markdown("---")
     
     # Performance Charts
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("### 📈 Actual vs. Predicted")
-        if os.path.exists("reports/visualizations/actual_vs_predicted_mega.png"):
-            st.image("reports/visualizations/actual_vs_predicted_mega.png", use_container_width=True)
-        else:
-            st.info("Actual vs Predicted chart not found. Run training first.")
-            
-    with c2:
-        st.markdown("### 📊 Error Distribution")
-        if os.path.exists("reports/visualizations/error_distribution_mega.png"):
-            st.image("reports/visualizations/error_distribution_mega.png", use_container_width=True)
-        else:
-            st.info("Error Distribution chart not found.")
-
-    st.markdown("---")
-    st.markdown("### 🕵️ Residual Analysis")
-    if os.path.exists("reports/visualizations/residual_plot_mega.png"):
-        st.image("reports/visualizations/residual_plot_mega.png", use_container_width=True)
-    else:
-        st.info("Residual plot not found.")
-        
-    # Legacy Data Table (If available)
     try:
         predictions_df = pd.read_csv("reports/predictions.csv")
-        st.markdown("## ⚠️ Top 10 Predictions (Legacy Data)")
-        st.dataframe(predictions_df.head(10), use_container_width=True)
-    except Exception:
-        pass
+        
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("### 📈 Actual vs. Predicted (Clarity Optimized)")
+            # Log scale is essential for prices to see both $5 and $500 clearly
+            fig = px.scatter(predictions_df, x='actual_price', y='predicted_price',
+                           hover_name='title', hover_data=['author', 'genre'],
+                           template="plotly_dark",
+                           labels={'actual_price': 'Actual Price ($)', 'predicted_price': 'Predicted Price ($)'},
+                           color='abs_error', color_continuous_scale='Turbo',
+                           opacity=0.7, trendline="ols")
+            
+            # Use log scales for visualization clarity
+            fig.update_xaxes(type='log')
+            fig.update_yaxes(type='log')
+            
+            # Identity line adjusted for log scale
+            min_p = min(predictions_df['actual_price'].min(), predictions_df['predicted_price'].min())
+            max_p = max(predictions_df['actual_price'].max(), predictions_df['predicted_price'].max())
+            fig.add_shape(type="line", x0=min_p, y0=min_p, x1=max_p, y1=max_p,
+                         line=dict(color="#00ff00", width=2, dash="dash"), layer="below")
+            
+            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                            margin=dict(t=30, b=0, l=0, r=0))
+            st.plotly_chart(fig, use_container_width=True)
+                
+        with c2:
+            st.markdown("### 📊 Error Distribution")
+            fig = px.histogram(predictions_df, x='error', nbins=50, template="plotly_dark",
+                             labels={'error': 'Prediction Error ($)'},
+                             color_discrete_sequence=['#f093fb'], marginal="violin")
+            fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### 🕵️ Residual Analysis (Predicted vs. Error)")
+        fig = px.scatter(predictions_df, x='predicted_price', y='error',
+                        hover_data=['title'], template="plotly_dark",
+                        labels={'predicted_price': 'Model Prediction', 'error': 'Residual (Error)'},
+                        color='error', color_continuous_scale='RdBu_r')
+        fig.add_hline(y=0, line_dash="dash", line_color="white", opacity=0.5)
+        fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+        st.plotly_chart(fig, use_container_width=True)
+        
+    except Exception as e:
+        st.info(f"Performance data or charts not fully available. Run training first.")
+        # Legacy Data Table (If available)
+        try:
+            predictions_df = pd.read_csv("reports/predictions.csv")
+            st.markdown("## ⚠️ Top 10 Predictions (Legacy Data)")
+            st.dataframe(predictions_df.head(10), use_container_width=True)
+        except Exception:
+            pass
 
 # ============================================================================
 # INSIGHTS PAGE
@@ -946,10 +906,41 @@ elif page == "📉 Model Diagnostics":
             
         st.markdown("---")
         st.markdown("### 🌎 Global Feature Importance (Ensemble Voting Weights)")
-        try:
-            st.image("reports/visualizations/feature_importance_mega.png", caption="Feature Importance (Aggregated from RF/XGB Estimators)")
-        except Exception:
-            st.write("*(Feature importance plot will appear here once the 'models/train_model.py' is run)*")
+        
+        if ensemble_predictor and ensemble_predictor.model:
+            try:
+                # Extract importance from RF component
+                model = ensemble_predictor.model.named_steps['model']
+                preprocessor = ensemble_predictor.model.named_steps['preprocessor']
+                
+                # Get feature names
+                num_features = preprocessor.transformers_[0][2]
+                try:
+                    cat_features = preprocessor.transformers_[1][1].named_steps['onehot'].get_feature_names_out().tolist()
+                except:
+                    cat_features = []
+                
+                feature_names = num_features + cat_features
+                
+                # Importance from Random Forest component
+                importances = model.estimators_[1].feature_importances_
+                
+                fi_df = pd.DataFrame({'Feature': feature_names, 'Importance': importances})
+                fi_df = fi_df.sort_values('Importance', ascending=True).tail(15)
+                
+                fig = px.bar(fi_df, x='Importance', y='Feature', orientation='h',
+                           color='Importance', color_continuous_scale='Viridis',
+                           title='Top 15 Feature Importances (Random Forest Proxy)')
+                fig.update_layout(height=600, showlegend=False)
+                st.plotly_chart(fig, use_container_width=True)
+            except Exception as e:
+                # Fallback to image if extraction fails
+                try:
+                    st.image("reports/visualizations/feature_importance_mega.png", use_container_width=True)
+                except:
+                    st.write(f"*(Feature importance could not be extracted: {str(e)})*")
+        else:
+            st.info("Model not loaded. Cannot display feature importance.")
 
 
 # ============================================================================
